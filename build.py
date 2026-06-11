@@ -9,6 +9,7 @@ OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 OUTPUT_FILE = OUTPUT_DIR / "blacklist-mihomo.yaml"
+OUTPUT_CLASH_FILE = OUTPUT_DIR / "blacklist-clash.list"
 
 DOMAIN_RE = re.compile(
     r"^(?:[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$",
@@ -150,6 +151,8 @@ final_blacklist = {
     if not is_whitelisted(domain, whitelist)
 }
 
+# Mihomo / Clash Meta rule-provider format
+
 with open(
     OUTPUT_FILE,
     "w",
@@ -161,8 +164,20 @@ with open(
     for domain in sorted(final_blacklist):
         f.write(f"  - {domain}\n")
 
+# Classic Clash rules format
+
+with open(
+    OUTPUT_CLASH_FILE,
+    "w",
+    encoding="utf-8"
+) as f:
+
+    for domain in sorted(final_blacklist):
+        f.write(f"DOMAIN-SUFFIX,{domain},REJECT\n")
+
 print()
 print("Blacklist loaded :", len(blacklist))
 print("Whitelist loaded :", len(whitelist))
 print("Final blacklist  :", len(final_blacklist))
-print("Output file      :", OUTPUT_FILE)
+print("Mihomo output    :", OUTPUT_FILE)
+print("Clash output     :", OUTPUT_CLASH_FILE)
