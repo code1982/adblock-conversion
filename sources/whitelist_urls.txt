@@ -1,1 +1,2 @@
 https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/whitelist-referral.txt
+https://gitlab.com/nosync/adblock-filters/-/raw/main/whitelist_domain.txt
