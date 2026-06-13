@@ -8,8 +8,7 @@ WHITELIST_URLS = Path("sources/whitelist_urls.txt")
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-OUTPUT_FILE = OUTPUT_DIR / "blacklist-mihomo.yaml"
-OUTPUT_CLASH_FILE = OUTPUT_DIR / "blacklist-clash.list"
+OUTPUT_FILE = OUTPUT_DIR / "hosts.txt"
 
 DOMAIN_RE = re.compile(
     r"^(?:[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$",
@@ -64,7 +63,6 @@ def extract_domain(line):
     # 0.0.0.0 example.com
     # 127.0.0.1 example.com
     #
-
     candidate = parts[-1]
 
     if candidate.startswith("*."):
@@ -126,7 +124,6 @@ def is_whitelisted(domain, whitelist):
     current = domain
 
     while True:
-
         if current in whitelist:
             return True
 
@@ -134,6 +131,39 @@ def is_whitelisted(domain, whitelist):
             return False
 
         current = current.split(".", 1)[1]
+
+
+def remove_redundant_subdomains(domains):
+    """
+    If both exist:
+
+        example.com
+        www.example.com
+        ads.www.example.com
+
+    keep only:
+
+        example.com
+    """
+
+    domains = set(domains)
+    result = set()
+
+    for domain in sorted(domains, key=lambda d: d.count(".")):
+        current = domain
+        redundant = False
+
+        while "." in current:
+            current = current.split(".", 1)[1]
+
+            if current in domains:
+                redundant = True
+                break
+
+        if not redundant:
+            result.add(domain)
+
+    return result
 
 
 blacklist_urls = read_url_list(BLACKLIST_URLS)
@@ -151,7 +181,11 @@ final_blacklist = {
     if not is_whitelisted(domain, whitelist)
 }
 
-# Mihomo / Clash Meta rule-provider format
+before_cleanup = len(final_blacklist)
+
+final_blacklist = remove_redundant_subdomains(final_blacklist)
+
+removed_subdomains = before_cleanup - len(final_blacklist)
 
 with open(
     OUTPUT_FILE,
@@ -159,25 +193,13 @@ with open(
     encoding="utf-8"
 ) as f:
 
-    f.write("payload:\n")
-
     for domain in sorted(final_blacklist):
-        f.write(f"  - {domain}\n")
-
-# Classic Clash rules format
-
-with open(
-    OUTPUT_CLASH_FILE,
-    "w",
-    encoding="utf-8"
-) as f:
-
-    for domain in sorted(final_blacklist):
-        f.write(f"DOMAIN-SUFFIX,{domain},REJECT\n")
+        f.write(f"{domain}\n")
 
 print()
-print("Blacklist loaded :", len(blacklist))
-print("Whitelist loaded :", len(whitelist))
-print("Final blacklist  :", len(final_blacklist))
-print("Mihomo output    :", OUTPUT_FILE)
-print("Clash output     :", OUTPUT_CLASH_FILE)
+print("Blacklist loaded      :", len(blacklist))
+print("Whitelist loaded      :", len(whitelist))
+print("After whitelist       :", before_cleanup)
+print("Redundant removed     :", removed_subdomains)
+print("Final blacklist       :", len(final_blacklist))
+print("Output                :", OUTPUT_FILE)
