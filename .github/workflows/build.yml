@@ -1,4 +1,4 @@
-name: Build Clash Blacklist
+name: Build Adblock Blacklist
 
 on:
   workflow_dispatch:
