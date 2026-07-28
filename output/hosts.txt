@@ -1195,7 +1195,6 @@
 200xvgasa.bar
 201.p2loot-it.shop
 201008281.xyz
-201205igp.gameloft.com
 2012094h84.shop
 2012indyinfo.com
 2012yearleft.com
@@ -5019,7 +5018,6 @@ a2zsouq.com
 a30177210136.cdn.optimizely.com
 a30406320356.cdn.optimizely.com
 a3058550533.cdn.optimizely.com
-a314.gameloft.com
 a3179610124.cdn.optimizely.com
 a352.sandiegouniontribune.com
 a3680047813.cdn.optimizely.com
@@ -54665,7 +54663,6 @@ datakepri.com
 datakron.com
 datal0ine.info
 datalabusa.com
-datalake.gameloft.com
 datalayer.orange.fr
 datali0nestream.info
 datalicious.com
